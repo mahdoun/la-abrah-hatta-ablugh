@@ -1,0 +1,502 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Android project
+        run: |
+          mkdir -p app/src/main/java/com/laabrahhattaablugh/app
+          mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/res/drawable
+
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "LaAbrahHattaAblugh"
+          include(":app")
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.laabrahhattaablugh.app'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.laabrahhattaablugh.app'
+                  minSdk 23
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
+              }
+          }
+          EOF
+
+          cat > app/src/main/res/values/strings.xml <<'EOF'
+          <resources>
+              <string name="app_name">لا أبرح حتى أبلغ</string>
+          </resources>
+          EOF
+
+          cat > app/src/main/res/values/colors.xml <<'EOF'
+          <resources>
+              <color name="green">#00C878</color>
+              <color name="dark">#003F45</color>
+          </resources>
+          EOF
+
+          cat > app/src/main/res/values/themes.xml <<'EOF'
+          <resources>
+              <style name="Theme.App" parent="android:style/Theme.Material.Light.NoActionBar">
+                  <item name="android:fontFamily">sans</item>
+                  <item name="android:colorAccent">@color/green</item>
+                  <item name="android:statusBarColor">@color/dark</item>
+                  <item name="android:navigationBarColor">@color/dark</item>
+                  <item name="android:windowLightStatusBar">false</item>
+              </style>
+          </resources>
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <application
+                  android:theme="@style/Theme.App"
+                  android:label="@string/app_name"
+                  android:allowBackup="true"
+                  android:supportsRtl="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:screenOrientation="portrait"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat > app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java <<'EOF'
+          package com.laabrahhattaablugh.app;
+
+          import android.app.*;
+          import android.os.*;
+          import android.content.*;
+          import android.graphics.Color;
+          import android.graphics.drawable.GradientDrawable;
+          import android.view.*;
+          import android.widget.*;
+          import java.text.SimpleDateFormat;
+          import java.util.*;
+
+          public class MainActivity extends Activity {
+
+              int GREEN=Color.rgb(0,200,120);
+              int DARK=Color.rgb(0,63,69);
+              int TEXT=Color.rgb(18,48,42);
+
+              LinearLayout content;
+              SharedPreferences prefs;
+              String name="";
+
+              Spinner hSurah,fromSurah,toSurah;
+              EditText hFrom,hTo,fromAyah,toAyah;
+              Button hButton,repeatButton,reviewButton;
+              TextView hTime,repeatTime,reviewTime;
+
+              long hStart=0,hEnd=0;
+              long repeatStart=0,repeatEnd=0;
+              long reviewStart=0,reviewEnd=0;
+
+              String[] surahs={
+              "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف",
+              "الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر",
+              "النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون",
+              "النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
+              "لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر",
+              "غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف",
+              "محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر",
+              "الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف",
+              "الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم",
+              "الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان",
+              "المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين",
+              "الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
+              "الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة",
+              "الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل",
+              "قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص",
+              "الفلق","الناس"};
+
+              @Override
+              public void onCreate(Bundle b){
+                  super.onCreate(b);
+                  prefs=getSharedPreferences("data",0);
+                  name=prefs.getString("name","");
+                  if(name.equals("")) askName();
+                  else createUI();
+              }
+
+              void askName(){
+                  EditText e=new EditText(this);
+                  e.setHint("اسم الطالب");
+                  new AlertDialog.Builder(this)
+                    .setTitle("لا أبرح حتى أبلغ")
+                    .setMessage("أدخل اسم الطالب. سيتم حفظه تلقائيًا.")
+                    .setView(e)
+                    .setCancelable(false)
+                    .setPositiveButton("حفظ",(d,w)->{
+                        name=e.getText().toString().trim();
+                        if(name.length()==0) name="مهدي قعلول";
+                        prefs.edit().putString("name",name).apply();
+                        createUI();
+                    }).show();
+              }
+
+              TextView text(String s,int size,int color){
+                  TextView t=new TextView(this);
+                  t.setText(s);
+                  t.setTextSize(size);
+                  t.setTextColor(color);
+                  t.setGravity(Gravity.CENTER);
+                  t.setPadding(8,8,8,8);
+                  return t;
+              }
+
+              LinearLayout card(){
+                  LinearLayout l=new LinearLayout(this);
+                  l.setOrientation(LinearLayout.VERTICAL);
+                  l.setPadding(18,12,18,18);
+                  GradientDrawable g=new GradientDrawable();
+                  g.setColor(Color.WHITE);
+                  g.setCornerRadius(28);
+                  g.setStroke(2,Color.rgb(225,239,234));
+                  l.setBackground(g);
+                  l.setElevation(4);
+                  return l;
+              }
+
+              Button button(String s,int color){
+                  Button b=new Button(this);
+                  b.setText(s);
+                  b.setTextSize(17);
+                  b.setTextColor(Color.WHITE);
+                  b.setAllCaps(false);
+                  GradientDrawable g=new GradientDrawable();
+                  g.setColor(color);
+                  g.setCornerRadius(50);
+                  b.setBackground(g);
+                  return b;
+              }
+
+              LinearLayout.LayoutParams margin(){
+                  LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);
+                  p.setMargins(0,8,0,8);
+                  return p;
+              }
+
+              Spinner spinner(){
+                  Spinner s=new Spinner(this);
+                  ArrayAdapter<String>a=new ArrayAdapter<>(
+                    this,android.R.layout.simple_spinner_item,surahs);
+                  a.setDropDownViewResource(
+                    android.R.layout.simple_spinner_dropdown_item);
+                  s.setAdapter(a);
+                  return s;
+              }
+
+              EditText number(String value){
+                  EditText e=new EditText(this);
+                  e.setText(value);
+                  e.setTextSize(18);
+                  e.setGravity(Gravity.CENTER);
+                  e.setInputType(2);
+                  e.setTextColor(TEXT);
+                  return e;
+              }
+
+              LinearLayout field(String title,EditText e){
+                  LinearLayout l=new LinearLayout(this);
+                  l.setOrientation(LinearLayout.VERTICAL);
+                  l.addView(text(title,15,TEXT));
+                  l.addView(e);
+                  return l;
+              }
+
+              void section(String title,View v){
+                  TextView h=text(title,20,DARK);
+                  h.setGravity(Gravity.RIGHT);
+                  h.setTypeface(null,1);
+                  content.addView(h,margin());
+                  content.addView(v,margin());
+              }
+
+              void createUI(){
+
+                  LinearLayout root=new LinearLayout(this);
+                  root.setOrientation(LinearLayout.VERTICAL);
+                  root.setBackgroundColor(Color.rgb(247,251,249));
+                  root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+                  LinearLayout header=new LinearLayout(this);
+                  header.setOrientation(LinearLayout.VERTICAL);
+                  header.setGravity(Gravity.CENTER);
+                  header.setBackgroundColor(DARK);
+
+                  TextView logoTitle=text("لا أبرح حتى أبلغ",28,Color.WHITE);
+                  logoTitle.setTypeface(null,1);
+                  header.addView(logoTitle);
+
+                  header.addView(text("برنامج متابعة الحفظ والمراجعة",15,Color.WHITE));
+                  header.addView(text(today(),15,Color.WHITE));
+
+                  root.addView(header,new LinearLayout.LayoutParams(-1,130));
+
+                  ScrollView scroll=new ScrollView(this);
+                  content=new LinearLayout(this);
+                  content.setOrientation(LinearLayout.VERTICAL);
+                  content.setPadding(16,16,16,30);
+                  content.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                  scroll.addView(content);
+                  root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
+
+                  LinearLayout nameCard=card();
+                  nameCard.addView(text(name,20,TEXT));
+                  section("👤 اسم الطالب",nameCard);
+
+                  LinearLayout mem=card();
+                  mem.addView(text("السورة",16,TEXT));
+                  hSurah=spinner();
+                  mem.addView(hSurah);
+
+                  LinearLayout row=new LinearLayout(this);
+                  hFrom=number("01");
+                  hTo=number("01");
+                  row.addView(field("من الآية",hFrom),
+                    new LinearLayout.LayoutParams(0,-2,1));
+                  row.addView(field("إلى الآية",hTo),
+                    new LinearLayout.LayoutParams(0,-2,1));
+                  mem.addView(row);
+
+                  hButton=button("▶ إبدأ الحفظ",GREEN);
+                  hTime=text("لم يبدأ الحفظ بعد",14,Color.DKGRAY);
+                  mem.addView(hButton);
+                  mem.addView(hTime);
+
+                  hButton.setOnClickListener(v->timer("h"));
+                  section("📖 ورد الحفظ",mem);
+
+                  LinearLayout rep=card();
+                  repeatButton=button("⏳ أكمل الحفظ أولًا",Color.GRAY);
+                  repeatButton.setEnabled(false);
+                  repeatTime=text("ينفتح بعد إنهاء الحفظ",14,Color.DKGRAY);
+                  rep.addView(repeatButton);
+                  rep.addView(repeatTime);
+                  repeatButton.setOnClickListener(v->timer("p"));
+                  section("🔁 توقيت التكرار",rep);
+
+                  LinearLayout review=card();
+
+                  fromSurah=spinner();
+                  toSurah=spinner();
+
+                  review.addView(text("من السورة",16,TEXT));
+                  review.addView(fromSurah);
+
+                  fromAyah=number("01");
+                  review.addView(field("من الآية",fromAyah));
+
+                  review.addView(text("إلى السورة",16,TEXT));
+                  review.addView(toSurah);
+
+                  toAyah=number("01");
+                  review.addView(field("إلى الآية",toAyah));
+
+                  section("📚 ورد المراجعة",review);
+
+                  LinearLayout rev=card();
+                  reviewButton=button("▶ إبدأ المراجعة",GREEN);
+                  reviewTime=text("لم تبدأ المراجعة بعد",14,Color.DKGRAY);
+                  rev.addView(reviewButton);
+                  rev.addView(reviewTime);
+                  reviewButton.setOnClickListener(v->timer("r"));
+                  section("⏱ توقيت المراجعة",rev);
+
+                  LinearLayout q=card();
+
+                  q.addView(text("هل كررت المحفوظ 50 مرة في مجلس واحد؟",16,TEXT));
+                  RadioGroup g1=new RadioGroup(this);
+                  RadioButton y1=new RadioButton(this);
+                  y1.setText("نعم");
+                  RadioButton n1=new RadioButton(this);
+                  n1.setText("لا");
+                  g1.addView(y1);g1.addView(n1);y1.setChecked(true);
+                  q.addView(g1);
+
+                  q.addView(text("هل قرأت ورد التّفسير؟",16,TEXT));
+                  RadioGroup g2=new RadioGroup(this);
+                  RadioButton y2=new RadioButton(this);
+                  y2.setText("نعم");
+                  RadioButton n2=new RadioButton(this);
+                  n2.setText("لا");
+                  g2.addView(y2);g2.addView(n2);y2.setChecked(true);
+                  q.addView(g2);
+
+                  section("✅ المتابعة اليومية",q);
+
+                  Button preview=button("📄 معاينة التقرير",GREEN);
+                  preview.setOnClickListener(v->
+                    new AlertDialog.Builder(this)
+                    .setTitle("التقرير")
+                    .setMessage(report())
+                    .setPositiveButton("تم",null)
+                    .setNeutralButton("📲 واتساب",(d,w)->share())
+                    .show());
+                  content.addView(preview,margin());
+
+                  Button share=button("📲 إرسال التقرير إلى واتساب",DARK);
+                  share.setOnClickListener(v->share());
+                  content.addView(share,margin());
+
+                  setContentView(root);
+              }
+
+              void timer(String type){
+                  long now=System.currentTimeMillis();
+
+                  if(type.equals("h")){
+                      if(hStart==0){
+                          hStart=now;
+                          hButton.setText("■ إنهاء الحفظ");
+                      }else{
+                          hEnd=now;
+                          hButton.setText("✓ تم إنهاء الحفظ");
+                          hButton.setEnabled(false);
+                          hTime.setText("من الساعة "+hm(hStart)+" إلى الساعة "+hm(hEnd));
+                          repeatButton.setEnabled(true);
+                          repeatButton.setText("▶ إبدأ التكرار");
+                      }
+                  }
+
+                  else if(type.equals("p")){
+                      if(repeatStart==0){
+                          repeatStart=now;
+                          repeatButton.setText("■ إنهاء التكرار");
+                      }else{
+                          repeatEnd=now;
+                          repeatButton.setText("✓ تم إنهاء التكرار");
+                          repeatButton.setEnabled(false);
+                          repeatTime.setText("من الساعة "+hm(repeatStart)+" إلى الساعة "+hm(repeatEnd));
+                      }
+                  }
+
+                  else{
+                      if(reviewStart==0){
+                          reviewStart=now;
+                          reviewButton.setText("■ إنهاء المراجعة");
+                      }else{
+                          reviewEnd=now;
+                          reviewButton.setText("✓ تم إنهاء المراجعة");
+                          reviewButton.setEnabled(false);
+                          reviewTime.setText("من الساعة "+hm(reviewStart)+" إلى الساعة "+hm(reviewEnd));
+                      }
+                  }
+              }
+
+              String hm(long x){
+                  return new SimpleDateFormat("HH:mm",Locale.US).format(new Date(x));
+              }
+
+              String today(){
+                  Calendar c=Calendar.getInstance();
+                  String[] d={"الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"};
+                  String[] m={"يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"};
+                  return d[c.get(Calendar.DAY_OF_WEEK)-1]+" "+
+                    String.format(Locale.US,"%02d",c.get(Calendar.DAY_OF_MONTH))+" "+
+                    m[c.get(Calendar.MONTH)]+" "+c.get(Calendar.YEAR);
+              }
+
+              String time(long s,long e){
+                  if(s==0)return "لم يبدأ";
+                  if(e==0)return "بدأت الساعة "+hm(s);
+                  return "من الساعة "+hm(s)+" إلى الساعة "+hm(e);
+              }
+
+              String report(){
+                  return "اسم الطّالب : "+name+
+                    "\\n تقرير اليوم :\\n"+
+                    " ورد يوم : "+today()+"\\n"+
+                    " ورد الحفظ : من الآية "+hFrom.getText()+
+                    " إلى الآية "+hTo.getText()+
+                    " من سورة "+hSurah.getSelectedItem()+"\\n"+
+                    " ⏰ توقيت الحفظ : "+time(hStart,hEnd)+"\\n"+
+                    " ⏰ توقيت التكرار : "+time(repeatStart,repeatEnd)+"\\n"+
+                    " ورد المراجعة : من الآية "+fromAyah.getText()+
+                    " من سورة "+fromSurah.getSelectedItem()+
+                    " إلى الآية "+toAyah.getText()+
+                    " من سورة "+toSurah.getSelectedItem()+"\\n"+
+                    " ⏰ توقيت المراجعة : "+time(reviewStart,reviewEnd)+"\\n"+
+                    " هل كررت المحفوظ 50 مرة في مجلس واحد : نعم\\n"+
+                    " هل قرأت ورد التّفسير : نعم";
+              }
+
+              void share(){
+                  Intent i=new Intent(Intent.ACTION_SEND);
+                  i.setType("text/plain");
+                  i.putExtra(Intent.EXTRA_TEXT,report());
+                  startActivity(Intent.createChooser(i,"إرسال التقرير"));
+              }
+          }
+          EOF
+
+      - name: Build
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
+
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build APK
+        run: gradle assembleDebug --no-daemon
+
+      - name: Save APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: لا-أبرح-حتى-أبلغ-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
