@@ -1,4 +1,4 @@
-name: Build APK v2
+name: Build APK v4
 
 on:
   workflow_dispatch:
@@ -82,13 +82,17 @@ jobs:
                   applicationId 'com.mahdoun.laabrah'
                   minSdk 23
                   targetSdk 34
-                  versionCode 3
-                  versionName '3.0'
+                  versionCode 4
+                  versionName '4.0'
               }
           }
 
           dependencies {
-              implementation 'androidx.appcompat:appcompat:1.7.0'
+          }
+
+          configurations.configureEach {
+              exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk7"
+              exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk8"
           }
           EOF
 
@@ -426,7 +430,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: LaAbrahHattaAblugh-v3-APK
+          name: LaAbrahHattaAblugh-v4-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
