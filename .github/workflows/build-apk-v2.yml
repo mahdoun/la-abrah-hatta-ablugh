@@ -82,8 +82,8 @@ jobs:
                   applicationId 'com.mahdoun.laabrah'
                   minSdk 23
                   targetSdk 34
-                  versionCode 2
-                  versionName '2.0'
+                  versionCode 3
+                  versionName '3.0'
               }
           }
 
@@ -107,7 +107,7 @@ jobs:
 
           cat > app/src/main/res/values/themes.xml <<'EOF'
           <resources>
-              <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+              <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
                   <item name="android:fontFamily">sans</item>
                   <item name="android:windowLightStatusBar">false</item>
                   <item name="android:statusBarColor">@color/teal_dark</item>
@@ -426,6 +426,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: LaAbrahHattaAblugh-v2-APK
+          name: LaAbrahHattaAblugh-v3-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
