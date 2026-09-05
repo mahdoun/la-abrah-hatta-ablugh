@@ -1,0 +1,276 @@
+name: Build APK - ORIGINAL UI + REQUESTED FIXES
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Create Android project
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p app/src/main/java/com/laabrahhattaablugh/app
+          mkdir -p app/src/main/res/drawable
+          mkdir -p app/src/main/res/values
+
+          cat > settings.gradle <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='LaAbrahHattaAblugh'
+          include ':app'
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=false
+          android.nonTransitiveRClass=false
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins { id 'com.android.application' }
+          android { namespace 'com.laabrahhattaablugh.app'; compileSdk 35
+              defaultConfig { applicationId 'com.laabrahhattaablugh.app'; minSdk 23; targetSdk 34; versionCode 15; versionName '15.0' }
+          }
+          EOF
+
+          cat > app/src/main/res/values/colors.xml <<'EOF'
+          <resources>
+            <color name="bg">#F4FAF8</color>
+            <color name="dark_teal">#00565B</color>
+          </resources>
+          EOF
+
+          cat > app/src/main/res/values/themes.xml <<'EOF'
+          <resources>
+            <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+              <item name="android:fontFamily">sans</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:statusBarColor">#00565B</item>
+              <item name="android:navigationBarColor">#00565B</item>
+              <item name="android:colorAccent">#00C878</item>
+            </style>
+          </resources>
+          EOF
+
+          cat > app/src/main/res/values/strings.xml <<'EOF'
+          <resources><string name="app_name">لا أبرح حتى أبلغ</string></resources>
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <application android:theme="@style/AppTheme" android:label="لا أبرح حتى أبلغ" android:icon="@drawable/logo_transparent" android:roundIcon="@drawable/logo_transparent" android:allowBackup="false" android:supportsRtl="true" android:usesCleartextTraffic="false">
+              <activity android:name=".MainActivity" android:screenOrientation="portrait" android:exported="true">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/>
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+
+          # Use the repository logo if present; otherwise use a tiny generated placeholder.
+          if [ -f 1000076437.png ]; then cp 1000076437.png app/src/main/res/drawable/logo.png; \
+          elif [ -f logo.png ]; then cp logo.png app/src/main/res/drawable/logo.png; \
+          else printf 'PNG' > app/src/main/res/drawable/logo.png; fi
+          /opt/imagemagick/bin/convert app/src/main/res/drawable/logo.png -alpha on -fuzz 8% -fill none -draw "color 0,0 floodfill" -draw "color 1535,0 floodfill" -draw "color 0,1535 floodfill" -draw "color 1535,1535 floodfill" app/src/main/res/drawable/logo_transparent.png
+
+          cat > app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java <<'EOF'
+          package com.laabrahhattaablugh.app;
+
+          import android.app.*;
+          import android.os.*;
+          import android.content.*;
+          import android.graphics.Color;
+          import android.graphics.Typeface;
+          import android.graphics.drawable.GradientDrawable;
+          import android.text.InputType;
+          import android.view.*;
+          import android.widget.*;
+          import java.text.SimpleDateFormat;
+          import java.util.*;
+
+          public class MainActivity extends Activity {
+              private static final int GREEN=Color.rgb(0,200,120), DARK=Color.rgb(0,86,91), TEXT=Color.rgb(18,48,42), BG=Color.rgb(247,251,249), GRAY=Color.rgb(145,145,145);
+              private SharedPreferences prefs;
+              private LinearLayout content;
+              private EditText name,hFrom,hTo,revFrom,revTo,revSingleFrom,revSingleTo,revMultiFrom,revMultiTo;
+              private Spinner memSurah,revFromSurah,revToSurah,revMultiFromSurah,revMultiToSurah;
+              private Button memBtn,repBtn,revBtn;
+              private TextView memTime,repTime,revTime;
+              private RadioGroup q1,q2,reviewMode;
+              private LinearLayout reviewSingle,reviewMulti;
+              private long memStart,memEnd,repStart,repEnd,revStart,revEnd;
+              private final String[] surahs={"الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"};
+
+              @Override public void onCreate(Bundle b){super.onCreate(b); getWindow().setStatusBarColor(DARK); getWindow().setNavigationBarColor(DARK); prefs=getSharedPreferences("student",MODE_PRIVATE); showSplashThenMain();}
+
+              private void showSplashThenMain(){
+                  final LinearLayout s=new LinearLayout(this); s.setOrientation(LinearLayout.VERTICAL); s.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL); s.setBackgroundColor(BG); s.setPadding(dp(20),dp(20),dp(20),dp(20));
+                  ImageView logo=new ImageView(this); logo.setImageResource(com.laabrahhattaablugh.app.R.drawable.logo_transparent); logo.setScaleType(ImageView.ScaleType.CENTER_INSIDE); LinearLayout.LayoutParams lpLogo=new LinearLayout.LayoutParams(-1,dp(250)); lpLogo.gravity=Gravity.CENTER_HORIZONTAL; s.addView(logo,lpLogo);
+                  TextView t=text("لا أبرح حتى أبلغ",26,DARK,true); t.setGravity(Gravity.CENTER); LinearLayout.LayoutParams lpT=new LinearLayout.LayoutParams(-1,dp(48)); lpT.gravity=Gravity.CENTER_HORIZONTAL; s.addView(t,lpT);
+                  TextView sub=text("رحلة يومية مع القرآن",18,DARK,false); sub.setGravity(Gravity.CENTER); LinearLayout.LayoutParams lpS=new LinearLayout.LayoutParams(-1,dp(42)); lpS.gravity=Gravity.CENTER_HORIZONTAL; s.addView(sub,lpS);
+                  setContentView(s);
+                  new Handler().postDelayed(()->{ if(prefs.getString("name","").trim().isEmpty()) nameDialog(); else buildUi(); },900);
+              }
+
+              private void nameDialog(){
+                  final EditText e=new EditText(this); e.setSingleLine(true); e.setTextSize(20); e.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL); e.setHint("اسم الطالب"); e.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+                  new AlertDialog.Builder(this).setTitle("مرحبًا بك").setMessage("أدخل اسم الطالب مرة واحدة وسيتم حفظه.").setView(e).setCancelable(false).setPositiveButton("حفظ",(d,w)->{String n=e.getText().toString().trim(); if(n.isEmpty()){nameDialog();return;} prefs.edit().putString("name",n).apply(); buildUi();}).show();
+              }
+
+              private int dp(int v){ return Math.round(v * getResources().getDisplayMetrics().density); }
+
+              private void buildUi(){
+                  ScrollView scroll=new ScrollView(this); scroll.setFillViewport(true); scroll.setBackgroundColor(BG); scroll.setClipToPadding(false);
+                  content=new LinearLayout(this); content.setOrientation(LinearLayout.VERTICAL); content.setLayoutDirection(View.LAYOUT_DIRECTION_RTL); content.setPadding(dp(6),0,dp(6),dp(14)); scroll.addView(content,new ScrollView.LayoutParams(-1,-1));
+
+                  TextView top=text("لا أبرح حتى أبلغ",25,Color.WHITE,true); top.setGravity(Gravity.CENTER); top.setBackgroundColor(DARK); content.addView(top,new LinearLayout.LayoutParams(-1,dp(52)));
+
+                  section("👤 اسم الطالب",nameCard());
+                  section("📖 ورد الحفظ",memoryCard());
+                  section("🔁 توقيت التكرار",repetitionCard());
+                  section("📚 ورد المراجعة",reviewCard());
+                  section("⏱ توقيت المراجعة",reviewTimerCard());
+                  section("✅ المتابعة اليومية",questionsCard());
+
+                  Button preview=button("📄 معاينة التقرير",GREEN); preview.setOnClickListener(v->previewReport()); content.addView(preview,margin(0,5,0,4));
+                  Button share=button("📲 إرسال التقرير إلى واتساب",DARK); share.setOnClickListener(v->share()); content.addView(share,margin(0,0,0,4));
+                  setContentView(scroll);
+              }
+
+              private View nameCard(){LinearLayout c=card(); name=new EditText(this); name.setText(prefs.getString("name","")); name.setHint("اكتب اسم الطالب"); name.setTextSize(20); name.setSingleLine(true); name.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL); name.setTextDirection(View.TEXT_DIRECTION_RTL); c.addView(name,new LinearLayout.LayoutParams(-1,dp(48))); return c;}
+
+              private View memoryCard(){
+                  LinearLayout c=card(); TextView st=text("السورة",16,TEXT,false); st.setGravity(Gravity.CENTER); c.addView(st,new LinearLayout.LayoutParams(-1,dp(28)));
+                  memSurah=spinner(); memSurah.setSelection(22); c.addView(memSurah,new LinearLayout.LayoutParams(-1,dp(38)));
+                  LinearLayout row=new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL); row.setGravity(Gravity.CENTER_VERTICAL); row.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                  LinearLayout from=field("من الآية",hFrom=number("01")); LinearLayout to=field("إلى الآية",hTo=number("01")); row.addView(from,new LinearLayout.LayoutParams(0,dp(64),1)); row.addView(to,new LinearLayout.LayoutParams(0,dp(64),1)); c.addView(row,new LinearLayout.LayoutParams(-1,dp(64)));
+                  memBtn=button("ابدأ الحفظ ▶",GREEN); c.addView(memBtn,new LinearLayout.LayoutParams(-1,dp(54))); memTime=small("لم يبدأ الحفظ بعد"); c.addView(memTime,new LinearLayout.LayoutParams(-1,dp(30)));
+                  memBtn.setOnClickListener(v->{if(memStart==0){memStart=System.currentTimeMillis();memBtn.setText("إنهاء الحفظ");}else{memEnd=System.currentTimeMillis();memBtn.setText("تم إنهاء الحفظ ✓");memBtn.setEnabled(false);memTime.setText("من الساعة "+hm(memStart)+" إلى الساعة "+hm(memEnd));repBtn.setEnabled(true);repBtn.setText("ابدأ التكرار ↪");repBtn.setBackground(round(GREEN,16));repTime.setText("جاهز لتسجيل وقت التكرار");}}); return c;
+              }
+
+              private View repetitionCard(){LinearLayout c=card(); repBtn=button("أكمل الحفظ أولًا ⏳",GRAY); repBtn.setEnabled(false); c.addView(repBtn,new LinearLayout.LayoutParams(-1,dp(54))); repTime=small("ينفتح بعد إنهاء الحفظ"); c.addView(repTime,new LinearLayout.LayoutParams(-1,dp(30))); repBtn.setOnClickListener(v->{if(repStart==0){repStart=System.currentTimeMillis();repBtn.setText("إنهاء التكرار");}else{repEnd=System.currentTimeMillis();repBtn.setText("تم إنهاء التكرار ✓");repBtn.setEnabled(false);repTime.setText("من الساعة "+hm(repStart)+" إلى الساعة "+hm(repEnd));warnIfShort();}});return c;}
+
+              private View reviewCard(){
+                  LinearLayout c=card();
+                  TextView modeLabel=text("نوع المراجعة",15,TEXT,true); modeLabel.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL); c.addView(modeLabel,new LinearLayout.LayoutParams(-1,dp(30)));
+                  reviewMode=new RadioGroup(this); reviewMode.setOrientation(RadioGroup.HORIZONTAL); reviewMode.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL); reviewMode.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                  RadioButton one=new RadioButton(this); one.setId(View.generateViewId()); one.setText("من سورة واحدة"); one.setTextSize(15);
+                  RadioButton many=new RadioButton(this); many.setId(View.generateViewId()); many.setText("أكثر من سورة"); many.setTextSize(15);
+                  reviewMode.addView(one,new RadioGroup.LayoutParams(-2,dp(42))); reviewMode.addView(many,new RadioGroup.LayoutParams(-2,dp(42))); one.setChecked(true); c.addView(reviewMode,new LinearLayout.LayoutParams(-1,dp(46)));
+
+                  reviewSingle=new LinearLayout(this); reviewSingle.setOrientation(LinearLayout.VERTICAL);
+                  reviewSingle.addView(text("السورة",15,TEXT,false));
+                  revFromSurah=spinner(); revFromSurah.setSelection(22); reviewSingle.addView(revFromSurah,new LinearLayout.LayoutParams(-1,dp(38)));
+                  revSingleFrom=number(""); reviewSingle.addView(field("من الآية",revSingleFrom),new LinearLayout.LayoutParams(-1,dp(62)));
+                  revSingleTo=number(""); reviewSingle.addView(field("إلى الآية",revSingleTo),new LinearLayout.LayoutParams(-1,dp(62)));
+                  c.addView(reviewSingle,new LinearLayout.LayoutParams(-1,-2));
+
+                  reviewMulti=new LinearLayout(this); reviewMulti.setOrientation(LinearLayout.VERTICAL); reviewMulti.setVisibility(View.GONE);
+                  reviewMulti.addView(text("من السورة",15,TEXT,false));
+                  revMultiFromSurah=spinner(); revMultiFromSurah.setSelection(22); reviewMulti.addView(revMultiFromSurah,new LinearLayout.LayoutParams(-1,dp(38)));
+                  revMultiFrom=number(""); reviewMulti.addView(field("من الآية",revMultiFrom),new LinearLayout.LayoutParams(-1,dp(62)));
+                  reviewMulti.addView(text("إلى السورة",15,TEXT,false));
+                  revMultiToSurah=spinner(); revMultiToSurah.setSelection(22); reviewMulti.addView(revMultiToSurah,new LinearLayout.LayoutParams(-1,dp(38)));
+                  revMultiTo=number(""); reviewMulti.addView(field("إلى الآية",revMultiTo),new LinearLayout.LayoutParams(-1,dp(62)));
+                  c.addView(reviewMulti,new LinearLayout.LayoutParams(-1,-2));
+
+                  one.setOnClickListener(v->{reviewSingle.setVisibility(View.VISIBLE);reviewMulti.setVisibility(View.GONE);});
+                  many.setOnClickListener(v->{reviewSingle.setVisibility(View.GONE);reviewMulti.setVisibility(View.VISIBLE);});
+                  return c;
+              }
+              private View reviewTimerCard(){LinearLayout c=card(); revBtn=button("ابدأ المراجعة ▶",GREEN); c.addView(revBtn,new LinearLayout.LayoutParams(-1,dp(54))); revTime=small("لم تبدأ المراجعة بعد"); c.addView(revTime,new LinearLayout.LayoutParams(-1,dp(30))); revBtn.setOnClickListener(v->{if(revStart==0){revStart=System.currentTimeMillis();revBtn.setText("إنهاء المراجعة");}else{revEnd=System.currentTimeMillis();revBtn.setText("تم إنهاء المراجعة ✓");revBtn.setEnabled(false);revTime.setText("من الساعة "+hm(revStart)+" إلى الساعة "+hm(revEnd));}}); return c;}
+
+              private View questionsCard(){LinearLayout c=card(); q1=yesNo(c,"هل كررت المحفوظ 50 مرة في مجلس واحد؟"); q2=yesNo(c,"هل قرأت ورد التفسير؟"); return c;}
+
+              private RadioGroup yesNo(LinearLayout c,String q){c.addView(text(q,16,TEXT,false),new LinearLayout.LayoutParams(-1,dp(40))); RadioGroup g=new RadioGroup(this); g.setOrientation(RadioGroup.HORIZONTAL); g.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL); g.setLayoutDirection(View.LAYOUT_DIRECTION_RTL); RadioButton yes=new RadioButton(this); yes.setText("نعم"); yes.setTextSize(16); RadioButton no=new RadioButton(this); no.setText("لا"); no.setTextSize(16); g.addView(yes,new RadioGroup.LayoutParams(-2,dp(42))); g.addView(no,new RadioGroup.LayoutParams(-2,dp(42))); yes.setChecked(true); c.addView(g,new LinearLayout.LayoutParams(-1,dp(46))); return g;}
+
+              private void section(String title,View v){TextView h=text(title,20,DARK,true); h.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL); content.addView(h,margin(0,6,0,3)); content.addView(v,margin(0,0,0,5));}
+              private LinearLayout card(){LinearLayout c=new LinearLayout(this); c.setOrientation(LinearLayout.VERTICAL); c.setGravity(Gravity.CENTER_HORIZONTAL); c.setPadding(dp(8),dp(7),dp(8),dp(7)); c.setBackground(round(Color.WHITE,12)); c.setElevation(2); return c;}
+              private Button button(String s,int color){Button b=new Button(this);b.setText(s);b.setTextSize(17);b.setTextColor(Color.WHITE);b.setAllCaps(false);b.setGravity(Gravity.CENTER);b.setPadding(dp(6),0,dp(6),0);b.setMinHeight(0);b.setMinimumHeight(0);b.setBackground(round(color,16));return b;}
+              private TextView text(String s,float size,int color,boolean bold){TextView t=new TextView(this);t.setText(s);t.setTextSize(size);t.setTextColor(color);t.setTypeface(Typeface.DEFAULT,bold?Typeface.BOLD:Typeface.NORMAL);t.setTextDirection(View.TEXT_DIRECTION_RTL);t.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);t.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);return t;}
+              private TextView small(String s){TextView t=text(s,14,Color.DKGRAY,false);t.setGravity(Gravity.CENTER);return t;}
+              private EditText number(String s){EditText e=new EditText(this);e.setText(s);e.setTextSize(20);e.setSingleLine(true);e.setInputType(InputType.TYPE_CLASS_NUMBER);e.setGravity(Gravity.CENTER);e.setTextColor(TEXT);e.setPadding(dp(4),0,dp(4),0);return e;}
+              private LinearLayout field(String label,EditText e){LinearLayout x=new LinearLayout(this);x.setOrientation(LinearLayout.VERTICAL);TextView l=text(label,15,TEXT,false);l.setGravity(Gravity.CENTER);x.addView(l,new LinearLayout.LayoutParams(-1,dp(28)));x.addView(e,new LinearLayout.LayoutParams(-1,dp(36)));return x;}
+              private Spinner spinner(){Spinner s=new Spinner(this);s.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);s.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);ArrayAdapter<String>a=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,surahs){@Override public View getView(int p,View v,android.view.ViewGroup parent){TextView t=(TextView)super.getView(p,v,parent);t.setTextSize(16);t.setTextColor(TEXT);t.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);t.setPadding(dp(8),0,dp(8),0);return t;}};a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);s.setAdapter(a);return s;}
+              private LinearLayout.LayoutParams margin(int l,int t,int r,int b){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.setMargins(dp(l),dp(t),dp(r),dp(b));return p;}
+              private GradientDrawable round(int color,float radius){GradientDrawable g=new GradientDrawable();g.setColor(color);g.setCornerRadius(dp(Math.round(radius)));if(color==Color.WHITE)g.setStroke(1,Color.rgb(218,230,227));return g;}
+
+              private void warnIfShort(){long minutes=(repEnd-repStart)/60000L;if(minutes<50){AlertDialog.Builder b=new AlertDialog.Builder(this).setMessage("وقت التكرار أقل من 50 دقيقة.\nالمدة المسجلة: "+minutes+" دقيقة.").setPositiveButton("حسنًا",null);b.setCustomTitle(dialogTitle("تنبيه"));b.show();}}
+              private TextView dialogTitle(String s){TextView t=text(s,20,DARK,true);t.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);t.setPadding(dp(24),dp(12),dp(24),dp(8));return t;}
+
+              private String report(){
+                  StringBuilder r=new StringBuilder(); String mem=memSurah.getSelectedItem().toString();
+                  r.append("اسم الطّالب : ").append(name.getText().toString().trim()).append("\n\n");
+                  r.append("تقرير اليوم :\nورد يوم : ").append(today()).append("\n\n");
+                  r.append("ورد الحفظ : من الآية ").append(two(hFrom.getText().toString())).append(" إلى الآية ").append(two(hTo.getText().toString())).append(" من سورة ").append(mem).append("\n");
+                  r.append("⏰ توقيت الحفظ : ").append(tm(memStart,memEnd)).append("\n"); r.append("⏰ توقيت التكرار : ").append(tm(repStart,repEnd)).append("\n\n");
+                  r.append("ورد المراجعة : ");
+                  if(reviewMode.getCheckedRadioButtonId()==reviewMode.getChildAt(0).getId()){
+                      String sf=revFromSurah.getSelectedItem().toString(); String a=revSingleFrom.getText().toString().trim(); String b=revSingleTo.getText().toString().trim();
+                      if(a.isEmpty() && b.isEmpty()) r.append("سورة ").append(sf); else r.append("من الآية ").append(two(a)).append(" إلى الآية ").append(two(b)).append(" من سورة ").append(sf);
+                  }else{
+                      String sf=revMultiFromSurah.getSelectedItem().toString(); String st=revMultiToSurah.getSelectedItem().toString(); String a=revMultiFrom.getText().toString().trim(); String b=revMultiTo.getText().toString().trim();
+                      if(a.isEmpty() && b.isEmpty()) r.append("سورة ").append(sf).append(" و ").append(st); else r.append("من الآية ").append(two(a)).append(" من سورة ").append(sf).append(" إلى الآية ").append(two(b)).append(" من سورة ").append(st);
+                  }
+                  r.append("\n");
+                  r.append("⏰ توقيت المراجعة : ").append(revStart>0&&revEnd>0?tm(revStart,revEnd):"قبل الحفظ مباشرة").append("\n\n");
+                  r.append("هل كررت المحفوظ 50 مرة في مجلس واحد : ").append(answer(q1)).append("\n"); r.append("هل قرأت ورد التّفسير : ").append(answer(q2)); return r.toString();
+              }
+              private String answer(RadioGroup g){int id=g.getCheckedRadioButtonId();RadioButton b=g.findViewById(id);return b==null?"لا":b.getText().toString();}
+              private void previewReport(){TextView v=text(report(),18,Color.rgb(35,35,35),false);v.setGravity(Gravity.RIGHT);v.setTextIsSelectable(true);v.setLineSpacing(3,1.05f);v.setPadding(16,14,16,14);AlertDialog.Builder b=new AlertDialog.Builder(this).setView(v).setPositiveButton("تم",null).setNeutralButton("إرسال إلى واتساب",(d,w)->share()); b.setCustomTitle(dialogTitle("التقرير")); b.show();}
+              private void share(){Intent i=new Intent(Intent.ACTION_SEND);i.setType("text/plain");i.putExtra(Intent.EXTRA_TEXT,report());startActivity(Intent.createChooser(i,"إرسال التقرير"));}
+              private String hm(long x){return new SimpleDateFormat("HH:mm",Locale.US).format(new Date(x));}
+              private String tm(long s,long e){if(s==0)return "لم يبدأ";if(e==0)return "بدأت الساعة "+hm(s);return "من الساعة "+hm(s)+" إلى الساعة "+hm(e);}
+              private String today(){Calendar c=Calendar.getInstance();String[]d={"الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"};String[]m={"يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"};return d[c.get(Calendar.DAY_OF_WEEK)-1]+" "+String.format(Locale.US,"%02d",c.get(Calendar.DAY_OF_MONTH))+" "+m[c.get(Calendar.MONTH)]+" "+c.get(Calendar.YEAR);}
+              private String two(String s){try{return String.format(Locale.US,"%02d",Integer.parseInt(s));}catch(Exception e){return s;}}
+          }
+          EOF
+
+          # Fail the workflow early if one of the critical UI-lock requirements was accidentally removed.
+          grep -q 'top.setBackgroundColor(DARK)' app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java
+          grep -q 'repBtn.setEnabled(true)' app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java
+          grep -q 'warnIfShort' app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java
+          grep -q 'setTextDirection(View.TEXT_DIRECTION_RTL)' app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java
+          grep -q 'reviewMode' app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java
+          grep -q 'logo_transparent' app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java
+          grep -q 'dialogTitle' app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java
+          grep -q 'append(sf).append(" و "' app/src/main/java/com/laabrahhattaablugh/app/MainActivity.java
+
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build APK
+        run: gradle assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: LaAbrahHattaAblugh-UI-Locked-v15
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
