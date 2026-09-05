@@ -31,13 +31,19 @@ jobs:
           mkdir -p app/src/main/java/com/mahdoun/laabrah
           mkdir -p app/src/main/res/drawable
           mkdir -p app/src/main/res/mipmap-hdpi
-          mkdir -p app/src/main/res/values
 
-          # Use the logo already uploaded to the repository.
+          # Prepare the uploaded logo: crop it to the circular emblem and make the
+          # outside transparent, so there is no square background in the splash/icon.
           LOGO="$(find . -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' \) | head -n 1 || true)"
           if [ -n "$LOGO" ]; then
-            cp "$LOGO" app/src/main/res/drawable/logo.png
+            cp "$LOGO" app/src/main/res/drawable/logo_source.png
+            if command -v convert >/dev/null 2>&1; then
+              convert "$LOGO" -alpha on -background none -gravity center                 -extent 1254x1254                 \( -size 1254x1254 xc:none -fill white -draw "circle 627,627 627,5" \)                 -compose DstIn -composite app/src/main/res/drawable/logo_transparent.png
+            else
+              cp "$LOGO" app/src/main/res/drawable/logo_transparent.png
+            fi
           fi
+          mkdir -p app/src/main/res/values
 
           cat > settings.gradle <<'EOF'
           pluginManagement {
@@ -82,8 +88,8 @@ jobs:
                   applicationId 'com.mahdoun.laabrah'
                   minSdk 23
                   targetSdk 34
-                  versionCode 4
-                  versionName '4.0'
+                  versionCode 5
+                  versionName '5.0'
               }
           }
 
@@ -121,14 +127,15 @@ jobs:
           </resources>
           EOF
 
-          cat > app/src/main/AndroidManifest.xml <<'EOF'
+                    cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <application
                   android:theme="@style/AppTheme"
                   android:label="لا أبرح حتى أبلغ"
+                  android:icon="@drawable/logo_transparent"
+                  android:roundIcon="@drawable/logo_transparent"
                   android:allowBackup="true"
-                  android:supportsRtl="true"
-                  android:usesCleartextTraffic="true">
+                  android:supportsRtl="true">
                   <activity
                       android:name=".MainActivity"
                       android:screenOrientation="portrait"
@@ -146,7 +153,8 @@ jobs:
           </manifest>
           EOF
 
-          cat > app/src/main/java/com/mahdoun/laabrah/SplashActivity.java <<'EOF'
+
+cat > app/src/main/java/com/mahdoun/laabrah/SplashActivity.java <<'EOF'
           package com.mahdoun.laabrah;
 
           import android.app.Activity;
@@ -172,7 +180,7 @@ jobs:
                   root.setPadding(32, 40, 32, 40);
 
                   ImageView logo = new ImageView(this);
-                  logo.setImageResource(com.mahdoun.laabrah.R.drawable.logo);
+                  logo.setImageResource(com.mahdoun.laabrah.R.drawable.logo_transparent);
                   logo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                   root.addView(logo, new LinearLayout.LayoutParams(
                           ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
@@ -275,37 +283,37 @@ jobs:
                   header.setPadding(8, 18, 8, 18);
                   root.addView(header, lp(-1, -2, 0));
 
-                  ImageView smallLogo = new ImageView(this);
-                  smallLogo.setImageResource(R.drawable.logo);
-                  smallLogo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                  root.addView(smallLogo, lp(-1, 120, 8));
-
                   addLabel(root, "�� اسم الطالب");
                   name = edit(root, prefs.getString("name",""));
                   name.setHint("اكتب اسم الطالب");
                   if (TextUtils.isEmpty(name.getText())) {
                       new AlertDialog.Builder(this)
                               .setTitle("اسم الطالب")
-                              .setMessage("اكتب اسم الطالب في خانة الاسم، ثم اضغط حفظ التقرير. سيتم الاحتفاظ به في الهاتف.")
-                              .setPositiveButton("حسنًا", null)
-                              .show();
+                              .setMessage("أدخل اسم الطالب لأول مرة، وسيتم حفظه.")
+                              .setView(name)
+                              .setPositiveButton("حفظ", (d,w)-> prefs.edit().putString("name", name.getText().toString().trim()).apply())
+                              .setCancelable(false).show();
                   }
-                  name.setOnFocusChangeListener((v, hasFocus) -> {
-                      if (!hasFocus && !name.getText().toString().trim().isEmpty()) {
-                          prefs.edit().putString("name", name.getText().toString().trim()).apply();
-                      }
-                  });
 
                   addLabel(root, "�� ورد الحفظ");
                   LinearLayout memCard = card();
                   root.addView(memCard);
                   memSurah = spinner(memCard);
                   memSurah.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, surahs));
-                  TextView fromT = txt("من الآية"); TextView toT = txt("إلى الآية");
-                  LinearLayout nums = new LinearLayout(this); nums.setOrientation(LinearLayout.HORIZONTAL); nums.setGravity(Gravity.CENTER);
-                  memFrom = number(nums, "01"); memTo = number(nums, "01");
-                  nums.addView(memTo, lp(0,-2,1)); nums.addView(toT, lp(0,-2,1)); nums.addView(memFrom, lp(0,-2,1)); nums.addView(fromT, lp(0,-2,1));
-                  memCard.addView(nums);
+
+                  LinearLayout nums = new LinearLayout(this);
+                  nums.setOrientation(LinearLayout.HORIZONTAL);
+                  nums.setGravity(Gravity.CENTER);
+                  nums.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                  TextView toT = txt("إلى الآية");
+                  TextView fromT = txt("من الآية");
+                  memTo = number(nums, "01");
+                  memFrom = number(nums, "01");
+                  // number() already adds the fields to nums; only add labels here.
+                  nums.addView(toT, 1, lp(0,-2,0));
+                  nums.addView(fromT, 3, lp(0,-2,0));
+                  memCard.addView(nums, lp(-1,-2,4));
+
                   memBtn = actionButton("ابدأ الحفظ", GREEN);
                   memCard.addView(memBtn, lp(-1, -2, 8));
                   TextView memTime = txt(""); memTime.setGravity(Gravity.CENTER); memCard.addView(memTime);
@@ -362,16 +370,17 @@ jobs:
                   String memS=surahs[memSurah.getSelectedItemPosition()];
                   StringBuilder r=new StringBuilder();
                   r.append("اسم الطالب : ").append(student).append("\n\n");
-                  r.append("تقرير اليوم : ").append("\n");
+                  r.append("تقرير اليوم :\n");
                   r.append("ورد يوم : ").append(new SimpleDateFormat("EEEE dd MMMM yyyy",new Locale("ar")).format(new Date())).append("\n\n");
-                  r.append("ورد الحفظ : ").append("\n");
+                  r.append("ورد الحفظ :\n");
                   r.append("من الآية ").append(two(memFrom.getText().toString())).append(" إلى الآية ").append(two(memTo.getText().toString())).append(" من سورة ").append(memS).append("\n");
                   if(memStart>0&&memEnd>0) r.append("⏰ توقيت الحفظ : من الساعة ").append(time(memStart)).append(" إلى الساعة ").append(time(memEnd)).append("\n");
                   if(repStart>0&&repEnd>0) r.append("⏰ توقيت التكرار : من الساعة ").append(time(repStart)).append(" إلى الساعة ").append(time(repEnd)).append("\n\n");
+
                   int rf=revFromSurah.getSelectedItemPosition(), rt=revToSurah.getSelectedItemPosition();
-                  r.append("ورد المراجعة : ").append("\n");
+                  r.append("ورد المراجعة :\n");
                   if(rf==rt) {
-                      r.append("من الآية ").append(two(revFrom.getText().toString())).append(" إلى الآية ").append(two(revTo.getText().toString())).append("\n");
+                      r.append("من الآية ").append(two(revFrom.getText().toString())).append(" إلى الآية ").append(two(revTo.getText().toString())).append(" من سورة ").append(surahs[rf]).append("\n");
                   } else {
                       r.append("من الآية ").append(two(revFrom.getText().toString())).append(" من سورة ").append(surahs[rf])
                        .append(" إلى الآية ").append(two(revTo.getText().toString())).append(" من سورة ").append(surahs[rt]).append("\n");
@@ -385,7 +394,14 @@ jobs:
                       Intent i=new Intent(Intent.ACTION_SEND); i.setType("text/plain"); i.putExtra(Intent.EXTRA_TEXT,r.toString());
                       startActivity(Intent.createChooser(i,"إرسال التقرير عبر"));
                   } else {
-                      TextView tv=new TextView(this); tv.setText(r.toString()); tv.setTextSize(18); tv.setTextColor(Color.rgb(35,35,35)); tv.setGravity(Gravity.RIGHT); tv.setTextDirection(View.TEXT_DIRECTION_RTL); tv.setPadding(24,20,24,20);
+                      TextView tv=new TextView(this);
+                      tv.setText(r.toString());
+                      tv.setTextSize(18);
+                      tv.setTextColor(Color.rgb(35,35,35));
+                      tv.setGravity(Gravity.RIGHT);
+                      tv.setTextDirection(View.TEXT_DIRECTION_RTL);
+                      tv.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                      tv.setPadding(24,20,24,20);
                       new AlertDialog.Builder(this).setTitle("التقرير").setView(tv).setPositiveButton("تم",null).show();
                   }
               }
@@ -399,26 +415,16 @@ jobs:
               LinearLayout card(){LinearLayout c=new LinearLayout(this);c.setOrientation(LinearLayout.VERTICAL);c.setPadding(12,14,12,14);c.setBackgroundColor(Color.WHITE);return c;}
               void addLabel(LinearLayout r,String s){TextView t=txt(s);t.setTextSize(23);t.setTypeface(Typeface.DEFAULT,Typeface.BOLD);t.setTextColor(DARK);t.setPadding(4,18,4,10);r.addView(t);}
               void addMini(LinearLayout r,String s){TextView t=txt(s);t.setTextSize(17);r.addView(t);}
-              TextView txt(String s){TextView t=new TextView(this);t.setText(s);t.setTextSize(18);t.setTextColor(DARK);t.setGravity(Gravity.RIGHT);t.setTextDirection(View.TEXT_DIRECTION_RTL);return t;}
+              TextView txt(String s){TextView t=new TextView(this);t.setText(s);t.setTextSize(18);t.setTextColor(DARK);t.setGravity(Gravity.RIGHT);t.setTextDirection(View.TEXT_DIRECTION_RTL);t.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);return t;}
               EditText edit(LinearLayout r,String s){EditText e=new EditText(this);e.setText(s);e.setTextSize(22);e.setGravity(Gravity.RIGHT);e.setTextDirection(View.TEXT_DIRECTION_RTL);r.addView(e,lp(-1,-2,4));return e;}
               EditText number(ViewGroup r,String hint){EditText e=new EditText(this);e.setHint(hint);e.setTextSize(24);e.setInputType(InputType.TYPE_CLASS_NUMBER);e.setGravity(Gravity.CENTER);r.addView(e,lp(0,-2,1));return e;}
               Spinner spinner(ViewGroup r){Spinner s=new Spinner(this);s.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);r.addView(s,lp(-1,-2,4));return s;}
               Button actionButton(String s,int color){Button b=new Button(this);b.setText(s);b.setTextSize(18);b.setTextColor(Color.WHITE);b.setAllCaps(false);b.setBackgroundColor(color);return b;}
-              TextView number(ViewGroup r,String hint){return null;}
               LinearLayout.LayoutParams lp(int w,int h,int top){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(w,h);p.topMargin=top;return p;}
               String time(long ms){return new SimpleDateFormat("HH:mm",Locale.getDefault()).format(new Date(ms));}
               String two(String s){try{return String.format(Locale.getDefault(),"%02d",Integer.parseInt(s));}catch(Exception e){return s;}}
           }
           EOF
-
-          # Fix the deliberately compact helper conflict above.
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path("app/src/main/java/com/mahdoun/laabrah/MainActivity.java")
-          s=p.read_text()
-          s=s.replace('    TextView number(ViewGroup r,String hint){return null;}\n','')
-          p.write_text(s)
-          PY
 
           # Install SDK packages needed by the build.
           yes | sdkmanager --licenses >/dev/null || true
@@ -430,7 +436,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: LaAbrahHattaAblugh-v4-APK
+          name: LaAbrahHattaAblugh-v5-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
