@@ -47,18 +47,18 @@ jobs:
 
           cat > settings.gradle <<'EOF'
           pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
+          repositories {
+          google()
+          mavenCentral()
+          gradlePluginPortal()
+          }
           }
           dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
+          repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+          repositories {
+          google()
+          mavenCentral()
+          }
           }
           rootProject.name = "LaAbrahHattaAblugh"
           include(":app")
@@ -66,7 +66,7 @@ jobs:
 
           cat > build.gradle <<'EOF'
           plugins {
-              id 'com.android.application' version '8.7.3' apply false
+          id 'com.android.application' version '8.7.3' apply false
           }
           EOF
 
@@ -77,84 +77,84 @@ jobs:
 
           cat > app/build.gradle <<'EOF'
           plugins {
-              id 'com.android.application'
+          id 'com.android.application'
           }
 
           android {
-              namespace 'com.mahdoun.laabrah'
-              compileSdk 35
+          namespace 'com.mahdoun.laabrah'
+          compileSdk 35
 
-              defaultConfig {
-                  applicationId 'com.mahdoun.laabrah'
-                  minSdk 23
-                  targetSdk 34
-                  versionCode 5
-                  versionName '5.0'
-              }
+          defaultConfig {
+          applicationId 'com.mahdoun.laabrah'
+          minSdk 23
+          targetSdk 34
+          versionCode 5
+          versionName '5.0'
+          }
           }
 
           dependencies {
           }
 
           configurations.configureEach {
-              exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk7"
-              exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk8"
+          exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk7"
+          exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk8"
           }
           EOF
 
           cat > app/src/main/res/values/colors.xml <<'EOF'
           <resources>
-              <color name="deep_teal">#00565B</color>
-              <color name="teal_dark">#003F43</color>
-              <color name="green">#00C887</color>
-              <color name="green_dark">#007A54</color>
-              <color name="page_bg">#F4F9F8</color>
-              <color name="card_stroke">#D8E5E2</color>
-              <color name="text_dark">#083F43</color>
-              <color name="gray_disabled">#999999</color>
+          <color name="deep_teal">#00565B</color>
+          <color name="teal_dark">#003F43</color>
+          <color name="green">#00C887</color>
+          <color name="green_dark">#007A54</color>
+          <color name="page_bg">#F4F9F8</color>
+          <color name="card_stroke">#D8E5E2</color>
+          <color name="text_dark">#083F43</color>
+          <color name="gray_disabled">#999999</color>
           </resources>
           EOF
 
           cat > app/src/main/res/values/themes.xml <<'EOF'
           <resources>
-              <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
-                  <item name="android:fontFamily">sans</item>
-                  <item name="android:windowLightStatusBar">false</item>
-                  <item name="android:statusBarColor">@color/teal_dark</item>
-                  <item name="android:navigationBarColor">@color/page_bg</item>
-                  <item name="android:windowActionModeOverlay">true</item>
-              </style>
+          <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+          <item name="android:fontFamily">sans</item>
+          <item name="android:windowLightStatusBar">false</item>
+          <item name="android:statusBarColor">@color/teal_dark</item>
+          <item name="android:navigationBarColor">@color/page_bg</item>
+          <item name="android:windowActionModeOverlay">true</item>
+          </style>
           </resources>
           EOF
 
-                    cat > app/src/main/AndroidManifest.xml <<'EOF'
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application
-                  android:theme="@style/AppTheme"
-                  android:label="لا أبرح حتى أبلغ"
-                  android:icon="@drawable/logo_transparent"
-                  android:roundIcon="@drawable/logo_transparent"
-                  android:allowBackup="true"
-                  android:supportsRtl="true">
-                  <activity
-                      android:name=".MainActivity"
-                      android:screenOrientation="portrait"
-                      android:exported="false" />
-                  <activity
-                      android:name=".SplashActivity"
-                      android:screenOrientation="portrait"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
+          <application
+          android:theme="@style/AppTheme"
+          android:label="لا أبرح حتى أبلغ"
+          android:icon="@drawable/logo_transparent"
+          android:roundIcon="@drawable/logo_transparent"
+          android:allowBackup="true"
+          android:supportsRtl="true">
+          <activity
+          android:name=".MainActivity"
+          android:screenOrientation="portrait"
+          android:exported="false" />
+          <activity
+          android:name=".SplashActivity"
+          android:screenOrientation="portrait"
+          android:exported="true">
+          <intent-filter>
+          <action android:name="android.intent.action.MAIN" />
+          <category android:name="android.intent.category.LAUNCHER" />
+          </intent-filter>
+          </activity>
+          </application>
           </manifest>
           EOF
 
 
-cat > app/src/main/java/com/mahdoun/laabrah/SplashActivity.java <<'EOF'
+          cat > app/src/main/java/com/mahdoun/laabrah/SplashActivity.java <<'EOF'
           package com.mahdoun.laabrah;
 
           import android.app.Activity;
@@ -169,48 +169,48 @@ cat > app/src/main/java/com/mahdoun/laabrah/SplashActivity.java <<'EOF'
           import android.widget.TextView;
 
           public class SplashActivity extends Activity {
-              @Override protected void onCreate(Bundle b) {
-                  super.onCreate(b);
-                  getWindow().setStatusBarColor(Color.rgb(0,63,67));
+          @Override protected void onCreate(Bundle b) {
+          super.onCreate(b);
+          getWindow().setStatusBarColor(Color.rgb(0,63,67));
 
-                  LinearLayout root = new LinearLayout(this);
-                  root.setOrientation(LinearLayout.VERTICAL);
-                  root.setGravity(Gravity.CENTER);
-                  root.setBackgroundColor(Color.rgb(0,86,91));
-                  root.setPadding(32, 40, 32, 40);
+          LinearLayout root = new LinearLayout(this);
+          root.setOrientation(LinearLayout.VERTICAL);
+          root.setGravity(Gravity.CENTER);
+          root.setBackgroundColor(Color.rgb(0,86,91));
+          root.setPadding(32, 40, 32, 40);
 
-                  ImageView logo = new ImageView(this);
-                  logo.setImageResource(com.mahdoun.laabrah.R.drawable.logo_transparent);
-                  logo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                  root.addView(logo, new LinearLayout.LayoutParams(
-                          ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+          ImageView logo = new ImageView(this);
+          logo.setImageResource(com.mahdoun.laabrah.R.drawable.logo_transparent);
+          logo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+          root.addView(logo, new LinearLayout.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
-                  TextView title = new TextView(this);
-                  title.setText("لَا أَبْرَحُ حَتَّىٰ أَبْلُغَ");
-                  title.setTextColor(Color.WHITE);
-                  title.setTextSize(30);
-                  title.setGravity(Gravity.CENTER);
-                  root.addView(title, new LinearLayout.LayoutParams(
-                          ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+          TextView title = new TextView(this);
+          title.setText("لَا أَبْرَحُ حَتَّىٰ أَبْلُغَ");
+          title.setTextColor(Color.WHITE);
+          title.setTextSize(30);
+          title.setGravity(Gravity.CENTER);
+          root.addView(title, new LinearLayout.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                  TextView sub = new TextView(this);
-                  sub.setText("التقرير اليومي لحفظ القرآن");
-                  sub.setTextColor(Color.WHITE);
-                  sub.setAlpha(.9f);
-                  sub.setTextSize(18);
-                  sub.setGravity(Gravity.CENTER);
-                  LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(
-                          ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                  sp.topMargin = 12;
-                  root.addView(sub, sp);
+          TextView sub = new TextView(this);
+          sub.setText("التقرير اليومي لحفظ القرآن");
+          sub.setTextColor(Color.WHITE);
+          sub.setAlpha(.9f);
+          sub.setTextSize(18);
+          sub.setGravity(Gravity.CENTER);
+          LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+          sp.topMargin = 12;
+          root.addView(sub, sp);
 
-                  setContentView(root);
+          setContentView(root);
 
-                  new Handler().postDelayed(() -> {
-                      startActivity(new Intent(this, MainActivity.class));
-                      finish();
-                  }, 1500);
-              }
+          new Handler().postDelayed(() -> {
+          startActivity(new Intent(this, MainActivity.class));
+          finish();
+          }, 1500);
+          }
           }
           EOF
 
@@ -235,194 +235,194 @@ cat > app/src/main/java/com/mahdoun/laabrah/SplashActivity.java <<'EOF'
           import java.util.Locale;
 
           public class MainActivity extends android.app.Activity {
-              final int TEAL = Color.rgb(0,86,91), GREEN = Color.rgb(0,200,135);
-              final int DARK = Color.rgb(8,63,67), BG = Color.rgb(244,249,248), GRAY = Color.rgb(153,153,153);
-              SharedPreferences prefs;
-              EditText name, memFrom, memTo, revFrom, revTo;
-              Spinner memSurah, revFromSurah, revToSurah;
-              Button memBtn, repBtn, revBtn, previewBtn, shareBtn;
-              RadioGroup q1, q2;
-              long memStart=0, memEnd=0, repStart=0, repEnd=0, revStart=0, revEnd=0;
+          final int TEAL = Color.rgb(0,86,91), GREEN = Color.rgb(0,200,135);
+          final int DARK = Color.rgb(8,63,67), BG = Color.rgb(244,249,248), GRAY = Color.rgb(153,153,153);
+          SharedPreferences prefs;
+          EditText name, memFrom, memTo, revFrom, revTo;
+          Spinner memSurah, revFromSurah, revToSurah;
+          Button memBtn, repBtn, revBtn, previewBtn, shareBtn;
+          RadioGroup q1, q2;
+          long memStart=0, memEnd=0, repStart=0, repEnd=0, revStart=0, revEnd=0;
 
-              String[] surahs = {
-                  "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
-                  "هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
-                  "الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
-                  "لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر",
-                  "فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق",
-                  "الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة",
-                  "الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج",
-                  "نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس",
-                  "التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
-                  "الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات",
-                  "القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
-                  "المسد","الإخلاص","الفلق","الناس"
-              };
+          String[] surahs = {
+          "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
+          "هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
+          "الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
+          "لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر",
+          "فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق",
+          "الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة",
+          "الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج",
+          "نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس",
+          "التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
+          "الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات",
+          "القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
+          "المسد","الإخلاص","الفلق","الناس"
+          };
 
-              @Override protected void onCreate(Bundle b) {
-                  super.onCreate(b);
-                  getWindow().setStatusBarColor(Color.rgb(0,63,67));
-                  getWindow().setNavigationBarColor(BG);
-                  prefs = getSharedPreferences("student", MODE_PRIVATE);
+          @Override protected void onCreate(Bundle b) {
+          super.onCreate(b);
+          getWindow().setStatusBarColor(Color.rgb(0,63,67));
+          getWindow().setNavigationBarColor(BG);
+          prefs = getSharedPreferences("student", MODE_PRIVATE);
 
-                  ScrollView scroll = new ScrollView(this);
-                  scroll.setBackgroundColor(BG);
-                  LinearLayout root = new LinearLayout(this);
-                  root.setOrientation(LinearLayout.VERTICAL);
-                  root.setPadding(12, 12, 12, 24);
-                  root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-                  scroll.addView(root);
+          ScrollView scroll = new ScrollView(this);
+          scroll.setBackgroundColor(BG);
+          LinearLayout root = new LinearLayout(this);
+          root.setOrientation(LinearLayout.VERTICAL);
+          root.setPadding(12, 12, 12, 24);
+          root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+          scroll.addView(root);
 
-                  TextView header = new TextView(this);
-                  header.setText("لا أبرح حتى أبلغ");
-                  header.setTextColor(Color.WHITE);
-                  header.setTextSize(30);
-                  header.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-                  header.setGravity(Gravity.CENTER);
-                  header.setBackgroundColor(TEAL);
-                  header.setPadding(8, 18, 8, 18);
-                  root.addView(header, lp(-1, -2, 0));
+          TextView header = new TextView(this);
+          header.setText("لا أبرح حتى أبلغ");
+          header.setTextColor(Color.WHITE);
+          header.setTextSize(30);
+          header.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+          header.setGravity(Gravity.CENTER);
+          header.setBackgroundColor(TEAL);
+          header.setPadding(8, 18, 8, 18);
+          root.addView(header, lp(-1, -2, 0));
 
-                  addLabel(root, "�� اسم الطالب");
-                  name = edit(root, prefs.getString("name",""));
-                  name.setHint("اكتب اسم الطالب");
-                  if (TextUtils.isEmpty(name.getText())) {
-                      new AlertDialog.Builder(this)
-                              .setTitle("اسم الطالب")
-                              .setMessage("أدخل اسم الطالب لأول مرة، وسيتم حفظه.")
-                              .setView(name)
-                              .setPositiveButton("حفظ", (d,w)-> prefs.edit().putString("name", name.getText().toString().trim()).apply())
-                              .setCancelable(false).show();
-                  }
+          addLabel(root, "�� اسم الطالب");
+          name = edit(root, prefs.getString("name",""));
+          name.setHint("اكتب اسم الطالب");
+          if (TextUtils.isEmpty(name.getText())) {
+          new AlertDialog.Builder(this)
+          .setTitle("اسم الطالب")
+          .setMessage("أدخل اسم الطالب لأول مرة، وسيتم حفظه.")
+          .setView(name)
+          .setPositiveButton("حفظ", (d,w)-> prefs.edit().putString("name", name.getText().toString().trim()).apply())
+          .setCancelable(false).show();
+          }
 
-                  addLabel(root, "�� ورد الحفظ");
-                  LinearLayout memCard = card();
-                  root.addView(memCard);
-                  memSurah = spinner(memCard);
-                  memSurah.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, surahs));
+          addLabel(root, "�� ورد الحفظ");
+          LinearLayout memCard = card();
+          root.addView(memCard);
+          memSurah = spinner(memCard);
+          memSurah.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, surahs));
 
-                  LinearLayout nums = new LinearLayout(this);
-                  nums.setOrientation(LinearLayout.HORIZONTAL);
-                  nums.setGravity(Gravity.CENTER);
-                  nums.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-                  TextView toT = txt("إلى الآية");
-                  TextView fromT = txt("من الآية");
-                  memTo = number(nums, "01");
-                  memFrom = number(nums, "01");
-                  // number() already adds the fields to nums; only add labels here.
-                  nums.addView(toT, 1, lp(0,-2,0));
-                  nums.addView(fromT, 3, lp(0,-2,0));
-                  memCard.addView(nums, lp(-1,-2,4));
+          LinearLayout nums = new LinearLayout(this);
+          nums.setOrientation(LinearLayout.HORIZONTAL);
+          nums.setGravity(Gravity.CENTER);
+          nums.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+          TextView toT = txt("إلى الآية");
+          TextView fromT = txt("من الآية");
+          memTo = number(nums, "01");
+          memFrom = number(nums, "01");
+          // number() already adds the fields to nums; only add labels here.
+          nums.addView(toT, 1, lp(0,-2,0));
+          nums.addView(fromT, 3, lp(0,-2,0));
+          memCard.addView(nums, lp(-1,-2,4));
 
-                  memBtn = actionButton("ابدأ الحفظ", GREEN);
-                  memCard.addView(memBtn, lp(-1, -2, 8));
-                  TextView memTime = txt(""); memTime.setGravity(Gravity.CENTER); memCard.addView(memTime);
-                  memBtn.setOnClickListener(v -> {
-                      if (memStart==0) { memStart=System.currentTimeMillis(); memBtn.setText("إنهاء الحفظ"); }
-                      else { memEnd=System.currentTimeMillis(); memBtn.setText("✓ تم إنهاء الحفظ"); memBtn.setEnabled(false); repBtn.setEnabled(true); repBtn.setBackgroundColor(GREEN); memTime.setText("من الساعة "+time(memStart)+" إلى الساعة "+time(memEnd)); }
-                  });
+          memBtn = actionButton("ابدأ الحفظ", GREEN);
+          memCard.addView(memBtn, lp(-1, -2, 8));
+          TextView memTime = txt(""); memTime.setGravity(Gravity.CENTER); memCard.addView(memTime);
+          memBtn.setOnClickListener(v -> {
+          if (memStart==0) { memStart=System.currentTimeMillis(); memBtn.setText("إنهاء الحفظ"); }
+          else { memEnd=System.currentTimeMillis(); memBtn.setText("✓ تم إنهاء الحفظ"); memBtn.setEnabled(false); repBtn.setEnabled(true); repBtn.setBackgroundColor(GREEN); memTime.setText("من الساعة "+time(memStart)+" إلى الساعة "+time(memEnd)); }
+          });
 
-                  addLabel(root, "�� توقيت التكرار");
-                  LinearLayout repCard = card(); root.addView(repCard);
-                  repBtn = actionButton("ابدأ التكرار", GRAY); repBtn.setEnabled(false);
-                  repCard.addView(repBtn, lp(-1,-2,8));
-                  TextView repTime = txt(""); repTime.setGravity(Gravity.CENTER); repCard.addView(repTime);
-                  repBtn.setOnClickListener(v -> {
-                      if (repStart==0) { repStart=System.currentTimeMillis(); repBtn.setText("إنهاء التكرار"); }
-                      else { repEnd=System.currentTimeMillis(); repBtn.setText("✓ تم إنهاء التكرار"); repBtn.setEnabled(false); repTime.setText("من الساعة "+time(repStart)+" إلى الساعة "+time(repEnd)); checkRepetitionDuration(); }
-                  });
+          addLabel(root, "�� توقيت التكرار");
+          LinearLayout repCard = card(); root.addView(repCard);
+          repBtn = actionButton("ابدأ التكرار", GRAY); repBtn.setEnabled(false);
+          repCard.addView(repBtn, lp(-1,-2,8));
+          TextView repTime = txt(""); repTime.setGravity(Gravity.CENTER); repCard.addView(repTime);
+          repBtn.setOnClickListener(v -> {
+          if (repStart==0) { repStart=System.currentTimeMillis(); repBtn.setText("إنهاء التكرار"); }
+          else { repEnd=System.currentTimeMillis(); repBtn.setText("✓ تم إنهاء التكرار"); repBtn.setEnabled(false); repTime.setText("من الساعة "+time(repStart)+" إلى الساعة "+time(repEnd)); checkRepetitionDuration(); }
+          });
 
-                  addLabel(root, "�� ورد المراجعة");
-                  LinearLayout revCard = card(); root.addView(revCard);
-                  addMini(revCard,"من السورة"); revFromSurah=spinner(revCard); revFromSurah.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,surahs));
-                  addMini(revCard,"من الآية"); revFrom=number(revCard,"01");
-                  addMini(revCard,"إلى السورة"); revToSurah=spinner(revCard); revToSurah.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,surahs));
-                  addMini(revCard,"إلى الآية"); revTo=number(revCard,"01");
-                  revBtn=actionButton("ابدأ المراجعة",GREEN); revCard.addView(revBtn,lp(-1,-2,8));
-                  TextView revTime=txt(""); revTime.setGravity(Gravity.CENTER); revCard.addView(revTime);
-                  revBtn.setOnClickListener(v->{ if(revStart==0){revStart=System.currentTimeMillis();revBtn.setText("إنهاء المراجعة");} else {revEnd=System.currentTimeMillis();revBtn.setText("✓ تم إنهاء المراجعة");revBtn.setEnabled(false);revTime.setText("من الساعة "+time(revStart)+" إلى الساعة "+time(revEnd));}});
+          addLabel(root, "�� ورد المراجعة");
+          LinearLayout revCard = card(); root.addView(revCard);
+          addMini(revCard,"من السورة"); revFromSurah=spinner(revCard); revFromSurah.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,surahs));
+          addMini(revCard,"من الآية"); revFrom=number(revCard,"01");
+          addMini(revCard,"إلى السورة"); revToSurah=spinner(revCard); revToSurah.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,surahs));
+          addMini(revCard,"إلى الآية"); revTo=number(revCard,"01");
+          revBtn=actionButton("ابدأ المراجعة",GREEN); revCard.addView(revBtn,lp(-1,-2,8));
+          TextView revTime=txt(""); revTime.setGravity(Gravity.CENTER); revCard.addView(revTime);
+          revBtn.setOnClickListener(v->{ if(revStart==0){revStart=System.currentTimeMillis();revBtn.setText("إنهاء المراجعة");} else {revEnd=System.currentTimeMillis();revBtn.setText("✓ تم إنهاء المراجعة");revBtn.setEnabled(false);revTime.setText("من الساعة "+time(revStart)+" إلى الساعة "+time(revEnd));}});
 
-                  addLabel(root,"هل كررت المحفوظ 50 مرة في مجلس واحد؟");
-                  q1=radioYesNo(root);
-                  addLabel(root,"هل قرأت ورد التفسير؟");
-                  q2=radioYesNo(root);
+          addLabel(root,"هل كررت المحفوظ 50 مرة في مجلس واحد؟");
+          q1=radioYesNo(root);
+          addLabel(root,"هل قرأت ورد التفسير؟");
+          q2=radioYesNo(root);
 
-                  previewBtn=actionButton("�� معاينة التقرير",Color.rgb(0,100,75)); root.addView(previewBtn,lp(-1,-2,10));
-                  shareBtn=actionButton("�� إرسال التقرير إلى واتساب",TEAL); root.addView(shareBtn,lp(-1,-2,8));
-                  previewBtn.setOnClickListener(v->showReport(false));
-                  shareBtn.setOnClickListener(v->showReport(true));
+          previewBtn=actionButton("�� معاينة التقرير",Color.rgb(0,100,75)); root.addView(previewBtn,lp(-1,-2,10));
+          shareBtn=actionButton("�� إرسال التقرير إلى واتساب",TEAL); root.addView(shareBtn,lp(-1,-2,8));
+          previewBtn.setOnClickListener(v->showReport(false));
+          shareBtn.setOnClickListener(v->showReport(true));
 
-                  setContentView(scroll);
-              }
+          setContentView(scroll);
+          }
 
-              void checkRepetitionDuration(){
-                  long minutes=(repEnd-repStart)/60000L;
-                  if(minutes<50){
-                      new AlertDialog.Builder(this).setTitle("⚠️ تنبيه")
-                          .setMessage("وقت التكرار أقل من 50 دقيقة.\nالمدة المسجلة: "+minutes+" دقيقة.")
-                          .setPositiveButton("حسنًا",null).show();
-                  }
-              }
+          void checkRepetitionDuration(){
+          long minutes=(repEnd-repStart)/60000L;
+          if(minutes<50){
+          new AlertDialog.Builder(this).setTitle("⚠️ تنبيه")
+          .setMessage("وقت التكرار أقل من 50 دقيقة.\nالمدة المسجلة: "+minutes+" دقيقة.")
+          .setPositiveButton("حسنًا",null).show();
+          }
+          }
 
-              void showReport(boolean share){
-                  String student=name.getText().toString().trim();
-                  if(student.isEmpty()) student=prefs.getString("name","");
-                  String memS=surahs[memSurah.getSelectedItemPosition()];
-                  StringBuilder r=new StringBuilder();
-                  r.append("اسم الطالب : ").append(student).append("\n\n");
-                  r.append("تقرير اليوم :\n");
-                  r.append("ورد يوم : ").append(new SimpleDateFormat("EEEE dd MMMM yyyy",new Locale("ar")).format(new Date())).append("\n\n");
-                  r.append("ورد الحفظ :\n");
-                  r.append("من الآية ").append(two(memFrom.getText().toString())).append(" إلى الآية ").append(two(memTo.getText().toString())).append(" من سورة ").append(memS).append("\n");
-                  if(memStart>0&&memEnd>0) r.append("⏰ توقيت الحفظ : من الساعة ").append(time(memStart)).append(" إلى الساعة ").append(time(memEnd)).append("\n");
-                  if(repStart>0&&repEnd>0) r.append("⏰ توقيت التكرار : من الساعة ").append(time(repStart)).append(" إلى الساعة ").append(time(repEnd)).append("\n\n");
+          void showReport(boolean share){
+          String student=name.getText().toString().trim();
+          if(student.isEmpty()) student=prefs.getString("name","");
+          String memS=surahs[memSurah.getSelectedItemPosition()];
+          StringBuilder r=new StringBuilder();
+          r.append("اسم الطالب : ").append(student).append("\n\n");
+          r.append("تقرير اليوم :\n");
+          r.append("ورد يوم : ").append(new SimpleDateFormat("EEEE dd MMMM yyyy",new Locale("ar")).format(new Date())).append("\n\n");
+          r.append("ورد الحفظ :\n");
+          r.append("من الآية ").append(two(memFrom.getText().toString())).append(" إلى الآية ").append(two(memTo.getText().toString())).append(" من سورة ").append(memS).append("\n");
+          if(memStart>0&&memEnd>0) r.append("⏰ توقيت الحفظ : من الساعة ").append(time(memStart)).append(" إلى الساعة ").append(time(memEnd)).append("\n");
+          if(repStart>0&&repEnd>0) r.append("⏰ توقيت التكرار : من الساعة ").append(time(repStart)).append(" إلى الساعة ").append(time(repEnd)).append("\n\n");
 
-                  int rf=revFromSurah.getSelectedItemPosition(), rt=revToSurah.getSelectedItemPosition();
-                  r.append("ورد المراجعة :\n");
-                  if(rf==rt) {
-                      r.append("من الآية ").append(two(revFrom.getText().toString())).append(" إلى الآية ").append(two(revTo.getText().toString())).append(" من سورة ").append(surahs[rf]).append("\n");
-                  } else {
-                      r.append("من الآية ").append(two(revFrom.getText().toString())).append(" من سورة ").append(surahs[rf])
-                       .append(" إلى الآية ").append(two(revTo.getText().toString())).append(" من سورة ").append(surahs[rt]).append("\n");
-                  }
-                  if(revStart>0&&revEnd>0) r.append("⏰ توقيت المراجعة : من الساعة ").append(time(revStart)).append(" إلى الساعة ").append(time(revEnd)).append("\n");
-                  else r.append("⏰ توقيت المراجعة : قبل الحفظ مباشرة\n");
-                  r.append("\nهل كررت المحفوظ 50 مرة في مجلس واحد : ").append(q1.getCheckedRadioButtonId()==q1.getChildAt(0).getId()?"نعم":"لا").append("\n");
-                  r.append("هل قرأت ورد التفسير : ").append(q2.getCheckedRadioButtonId()==q2.getChildAt(0).getId()?"نعم":"لا");
+          int rf=revFromSurah.getSelectedItemPosition(), rt=revToSurah.getSelectedItemPosition();
+          r.append("ورد المراجعة :\n");
+          if(rf==rt) {
+          r.append("من الآية ").append(two(revFrom.getText().toString())).append(" إلى الآية ").append(two(revTo.getText().toString())).append(" من سورة ").append(surahs[rf]).append("\n");
+          } else {
+          r.append("من الآية ").append(two(revFrom.getText().toString())).append(" من سورة ").append(surahs[rf])
+          .append(" إلى الآية ").append(two(revTo.getText().toString())).append(" من سورة ").append(surahs[rt]).append("\n");
+          }
+          if(revStart>0&&revEnd>0) r.append("⏰ توقيت المراجعة : من الساعة ").append(time(revStart)).append(" إلى الساعة ").append(time(revEnd)).append("\n");
+          else r.append("⏰ توقيت المراجعة : قبل الحفظ مباشرة\n");
+          r.append("\nهل كررت المحفوظ 50 مرة في مجلس واحد : ").append(q1.getCheckedRadioButtonId()==q1.getChildAt(0).getId()?"نعم":"لا").append("\n");
+          r.append("هل قرأت ورد التفسير : ").append(q2.getCheckedRadioButtonId()==q2.getChildAt(0).getId()?"نعم":"لا");
 
-                  if(share){
-                      Intent i=new Intent(Intent.ACTION_SEND); i.setType("text/plain"); i.putExtra(Intent.EXTRA_TEXT,r.toString());
-                      startActivity(Intent.createChooser(i,"إرسال التقرير عبر"));
-                  } else {
-                      TextView tv=new TextView(this);
-                      tv.setText(r.toString());
-                      tv.setTextSize(18);
-                      tv.setTextColor(Color.rgb(35,35,35));
-                      tv.setGravity(Gravity.RIGHT);
-                      tv.setTextDirection(View.TEXT_DIRECTION_RTL);
-                      tv.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-                      tv.setPadding(24,20,24,20);
-                      new AlertDialog.Builder(this).setTitle("التقرير").setView(tv).setPositiveButton("تم",null).show();
-                  }
-              }
+          if(share){
+          Intent i=new Intent(Intent.ACTION_SEND); i.setType("text/plain"); i.putExtra(Intent.EXTRA_TEXT,r.toString());
+          startActivity(Intent.createChooser(i,"إرسال التقرير عبر"));
+          } else {
+          TextView tv=new TextView(this);
+          tv.setText(r.toString());
+          tv.setTextSize(18);
+          tv.setTextColor(Color.rgb(35,35,35));
+          tv.setGravity(Gravity.RIGHT);
+          tv.setTextDirection(View.TEXT_DIRECTION_RTL);
+          tv.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+          tv.setPadding(24,20,24,20);
+          new AlertDialog.Builder(this).setTitle("التقرير").setView(tv).setPositiveButton("تم",null).show();
+          }
+          }
 
-              RadioGroup radioYesNo(LinearLayout root){
-                  RadioGroup g=new RadioGroup(this); g.setOrientation(LinearLayout.VERTICAL); g.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-                  RadioButton yes=new RadioButton(this); yes.setText("نعم"); yes.setId(View.generateViewId());
-                  RadioButton no=new RadioButton(this); no.setText("لا"); no.setId(View.generateViewId());
-                  g.addView(yes);g.addView(no);yes.setChecked(true);root.addView(g);return g;
-              }
-              LinearLayout card(){LinearLayout c=new LinearLayout(this);c.setOrientation(LinearLayout.VERTICAL);c.setPadding(12,14,12,14);c.setBackgroundColor(Color.WHITE);return c;}
-              void addLabel(LinearLayout r,String s){TextView t=txt(s);t.setTextSize(23);t.setTypeface(Typeface.DEFAULT,Typeface.BOLD);t.setTextColor(DARK);t.setPadding(4,18,4,10);r.addView(t);}
-              void addMini(LinearLayout r,String s){TextView t=txt(s);t.setTextSize(17);r.addView(t);}
-              TextView txt(String s){TextView t=new TextView(this);t.setText(s);t.setTextSize(18);t.setTextColor(DARK);t.setGravity(Gravity.RIGHT);t.setTextDirection(View.TEXT_DIRECTION_RTL);t.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);return t;}
-              EditText edit(LinearLayout r,String s){EditText e=new EditText(this);e.setText(s);e.setTextSize(22);e.setGravity(Gravity.RIGHT);e.setTextDirection(View.TEXT_DIRECTION_RTL);r.addView(e,lp(-1,-2,4));return e;}
-              EditText number(ViewGroup r,String hint){EditText e=new EditText(this);e.setHint(hint);e.setTextSize(24);e.setInputType(InputType.TYPE_CLASS_NUMBER);e.setGravity(Gravity.CENTER);r.addView(e,lp(0,-2,1));return e;}
-              Spinner spinner(ViewGroup r){Spinner s=new Spinner(this);s.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);r.addView(s,lp(-1,-2,4));return s;}
-              Button actionButton(String s,int color){Button b=new Button(this);b.setText(s);b.setTextSize(18);b.setTextColor(Color.WHITE);b.setAllCaps(false);b.setBackgroundColor(color);return b;}
-              LinearLayout.LayoutParams lp(int w,int h,int top){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(w,h);p.topMargin=top;return p;}
-              String time(long ms){return new SimpleDateFormat("HH:mm",Locale.getDefault()).format(new Date(ms));}
-              String two(String s){try{return String.format(Locale.getDefault(),"%02d",Integer.parseInt(s));}catch(Exception e){return s;}}
+          RadioGroup radioYesNo(LinearLayout root){
+          RadioGroup g=new RadioGroup(this); g.setOrientation(LinearLayout.VERTICAL); g.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+          RadioButton yes=new RadioButton(this); yes.setText("نعم"); yes.setId(View.generateViewId());
+          RadioButton no=new RadioButton(this); no.setText("لا"); no.setId(View.generateViewId());
+          g.addView(yes);g.addView(no);yes.setChecked(true);root.addView(g);return g;
+          }
+          LinearLayout card(){LinearLayout c=new LinearLayout(this);c.setOrientation(LinearLayout.VERTICAL);c.setPadding(12,14,12,14);c.setBackgroundColor(Color.WHITE);return c;}
+          void addLabel(LinearLayout r,String s){TextView t=txt(s);t.setTextSize(23);t.setTypeface(Typeface.DEFAULT,Typeface.BOLD);t.setTextColor(DARK);t.setPadding(4,18,4,10);r.addView(t);}
+          void addMini(LinearLayout r,String s){TextView t=txt(s);t.setTextSize(17);r.addView(t);}
+          TextView txt(String s){TextView t=new TextView(this);t.setText(s);t.setTextSize(18);t.setTextColor(DARK);t.setGravity(Gravity.RIGHT);t.setTextDirection(View.TEXT_DIRECTION_RTL);t.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);return t;}
+          EditText edit(LinearLayout r,String s){EditText e=new EditText(this);e.setText(s);e.setTextSize(22);e.setGravity(Gravity.RIGHT);e.setTextDirection(View.TEXT_DIRECTION_RTL);r.addView(e,lp(-1,-2,4));return e;}
+          EditText number(ViewGroup r,String hint){EditText e=new EditText(this);e.setHint(hint);e.setTextSize(24);e.setInputType(InputType.TYPE_CLASS_NUMBER);e.setGravity(Gravity.CENTER);r.addView(e,lp(0,-2,1));return e;}
+          Spinner spinner(ViewGroup r){Spinner s=new Spinner(this);s.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);r.addView(s,lp(-1,-2,4));return s;}
+          Button actionButton(String s,int color){Button b=new Button(this);b.setText(s);b.setTextSize(18);b.setTextColor(Color.WHITE);b.setAllCaps(false);b.setBackgroundColor(color);return b;}
+          LinearLayout.LayoutParams lp(int w,int h,int top){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(w,h);p.topMargin=top;return p;}
+          String time(long ms){return new SimpleDateFormat("HH:mm",Locale.getDefault()).format(new Date(ms));}
+          String two(String s){try{return String.format(Locale.getDefault(),"%02d",Integer.parseInt(s));}catch(Exception e){return s;}}
           }
           EOF
 
