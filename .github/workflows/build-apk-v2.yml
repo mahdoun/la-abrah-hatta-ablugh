@@ -521,9 +521,6 @@ jobs:
                               .setView(tv)
                               .setPositiveButton("تم",null)
                               .create();
-                      dialog.setOnShowListener(d -> {
-                          }
-                      });
                       dialog.show();
                   }
               }
@@ -691,3 +688,4 @@ jobs:
           name: LaAbrahHattaAblugh-v5-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
