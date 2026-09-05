@@ -287,12 +287,24 @@ jobs:
           name = edit(root, prefs.getString("name",""));
           name.setHint("اكتب اسم الطالب");
           if (TextUtils.isEmpty(name.getText())) {
-          new AlertDialog.Builder(this)
-          .setTitle("اسم الطالب")
-          .setMessage("أدخل اسم الطالب لأول مرة، وسيتم حفظه.")
-          .setView(name)
-          .setPositiveButton("حفظ", (d,w)-> prefs.edit().putString("name", name.getText().toString().trim()).apply())
-          .setCancelable(false).show();
+              final EditText dialogName = new EditText(this);
+              dialogName.setSingleLine(true);
+              dialogName.setTextSize(22);
+              dialogName.setGravity(Gravity.RIGHT);
+              dialogName.setTextDirection(View.TEXT_DIRECTION_RTL);
+              dialogName.setHint("اكتب اسم الطالب");
+
+              new AlertDialog.Builder(this)
+                      .setTitle("اسم الطالب")
+                      .setMessage("أدخل اسم الطالب لأول مرة، وسيتم حفظه.")
+                      .setView(dialogName)
+                      .setPositiveButton("حفظ", (d,w)-> {
+                          String value = dialogName.getText().toString().trim();
+                          name.setText(value);
+                          prefs.edit().putString("name", value).apply();
+                      })
+                      .setCancelable(false)
+                      .show();
           }
 
           addLabel(root, "�� ورد الحفظ");
