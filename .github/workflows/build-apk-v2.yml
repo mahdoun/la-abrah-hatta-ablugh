@@ -522,10 +522,6 @@ jobs:
                               .setPositiveButton("تم",null)
                               .create();
                       dialog.setOnShowListener(d -> {
-                          TextView title=dialog.findViewById(android.R.id.alertTitle);
-                          if(title!=null){
-                              title.setGravity(Gravity.RIGHT);
-                              title.setTextDirection(View.TEXT_DIRECTION_RTL);
                           }
                       });
                       dialog.show();
@@ -658,7 +654,7 @@ jobs:
               GradientDrawable cardDrawable(int color,float radius){
                   GradientDrawable d=new GradientDrawable();
                   d.setColor(color);
-                  d.setCornerRadius(dp(radius));
+                  d.setCornerRadius(dp((int)radius));
                   if(color==Color.WHITE) d.setStroke(dp(1),Color.rgb(218,230,227));
                   return d;
               }
